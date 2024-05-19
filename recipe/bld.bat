@@ -1,10 +1,15 @@
 
 set CMAKE_CONFIG="Release"
 
+call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+set "PATH=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.16.27023\bin\HostX64\x64;%PATH%"
+set "LIB=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.16.27023\lib\x64;%LIB%"
+set "INCLUDE=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.16.27023\include;%INCLUDE%"
+
 cd %SRC_DIR%\sources\shiboken2
 mkdir build && cd build
 
-cmake -LAH -G"NMake Makefiles"                               ^
+cmake -LAH -G"NMake Makefiles JOM"                           ^
     -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%"                   ^
     -DCMAKE_INSTALL_PREFIX="%LIBRARY_PREFIX%"                ^
     -DPYTHON_SITE_PACKAGES="%SP_DIR:\=/%"                    ^
@@ -24,11 +29,12 @@ move shiboken2-%PKG_VERSION%.dist-info %SP_DIR%\shiboken2-%PKG_VERSION%.dist-inf
 cd %SRC_DIR%\sources\pyside2
 mkdir build && cd build
 
-cmake -LAH -G"NMake Makefiles"                               ^
+cmake -LAH -G"NMake Makefiles JOM"                           ^
     -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%"                   ^
     -DCMAKE_INSTALL_PREFIX="%LIBRARY_PREFIX%"                ^
     -DPYTHON_SITE_PACKAGES="%SP_DIR:\=/%"                    ^
     -DCMAKE_BUILD_TYPE=Release                               ^
+    -DBUILD_TESTS=OFF                                        ^
     -DPYTHON_EXECUTABLE="%PYTHON%"                           ^
     ..
 if errorlevel 1 exit 1
@@ -46,7 +52,7 @@ move PySide2-%PKG_VERSION%.dist-info %SP_DIR%\PySide2-%PKG_VERSION%.dist-info
 cd %SRC_DIR%\sources\pyside2-tools
 mkdir build && cd build
 
-cmake -LAH -G"NMake Makefiles"                               ^
+cmake -LAH -G"NMake Makefiles JOM"                           ^
     -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%"                   ^
     -DCMAKE_INSTALL_PREFIX="%LIBRARY_PREFIX%"                ^
     -DSITE_PACKAGE="%SP_DIR:\=/%"                            ^

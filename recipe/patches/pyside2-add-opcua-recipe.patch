@@ -1,0 +1,171 @@
+diff --git a/sources/cmake_helpers/helpers.cmake b/sources/cmake_helpers/helpers.cmake
+index fed96b5..b26b6c3 100644
+--- a/sources/cmake_helpers/helpers.cmake
++++ b/sources/cmake_helpers/helpers.cmake
+@@ -9,6 +9,7 @@ set(ALL_ESSENTIAL_MODULES
+     PrintSupport
+     Sql
+     Network
++    OpcUa
+     Test
+     Concurrent)
+ if(UNIX AND NOT APPLE)
+diff --git a/sources/pyside2/PySide2/QtOpcUa/CMakeLists.txt b/sources/pyside2/PySide2/QtOpcUa/CMakeLists.txt
+new file mode 100644
+index 0000000..bb46e3c
+--- /dev/null
++++ b/sources/pyside2/PySide2/QtOpcUa/CMakeLists.txt
+@@ -0,0 +1,49 @@
++project(QtOpcUa)
++
++set(QtOpcUa_SRC
++    ${QtOpcUa_GEN_DIR}/qopcuaplugin_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuaprovider_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuaclient_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuanode_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuaerrorstate_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuaattributeoperand_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuaapplicationdescription_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuaendpointdescription_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuaauthenticationinformation_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuaerrorstate_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuapkiconfiguration_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuaapplicationidentity_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuausertokenpolicy_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcua_nodeids_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuaqualifiedname_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcualocalizedtext_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuamonitoringparameters_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuamonitoringparameters_datachangefilter_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcuamonitoringparameters_eventfilter_wrapper.cpp
++    ${QtOpcUa_GEN_DIR}/qopcua_wrapper.cpp
++    # module is always needed
++    ${QtOpcUa_GEN_DIR}/qtopcua_module_wrapper.cpp
++)
++
++set(QtOpcUa_include_dirs    ${QtOpcUa_SOURCE_DIR}
++                            ${QtOpcUa_BINARY_DIR}
++                            ${Qt${QT_MAJOR_VERSION}Core_INCLUDE_DIRS}
++                            ${Qt${QT_MAJOR_VERSION}Network_INCLUDE_DIRS}
++                            ${Qt${QT_MAJOR_VERSION}OpcUa_INCLUDE_DIRS}
++                            ${libpyside_SOURCE_DIR}
++                            ${QtCore_GEN_DIR}
++                            ${QtNetwork_GEN_DIR})
++
++set(QtOpcUa_libraries pyside2
++                        ${Qt${QT_MAJOR_VERSION}OpcUa_LIBRARIES}
++                        ${Qt${QT_MAJOR_VERSION}Core_LIBRARIES}
++                        ${Qt${QT_MAJOR_VERSION}Network_LIBRARIES})
++
++set(QtOpcUa_deps QtCore QtNetwork)
++
++create_pyside_module(NAME QtOpcUa
++                     INCLUDE_DIRS QtOpcUa_include_dirs
++                     LIBRARIES QtOpcUa_libraries
++                     DEPS QtOpcUa_deps
++                     TYPESYSTEM_PATH QtOpcUa_SOURCE_DIR
++                     SOURCES QtOpcUa_SRC)
+diff --git a/sources/pyside2/PySide2/QtOpcUa/typesystem_opcua.xml b/sources/pyside2/PySide2/QtOpcUa/typesystem_opcua.xml
+new file mode 100644
+index 0000000..8634f30
+--- /dev/null
++++ b/sources/pyside2/PySide2/QtOpcUa/typesystem_opcua.xml
+@@ -0,0 +1,91 @@
++<?xml version="1.0" encoding="UTF-8"?>
++
++<typesystem package="PySide2.QtOpcUa">
++  <load-typesystem name="QtCore/typesystem_core_common.xml" generate="no" />
++  <load-typesystem name="QtNetwork/typesystem_network.xml" generate="no" />
++
++  <rejection class="*" function-name="nodeIdStringSplit" />
++  <rejection class="*" function-name="mandatoryBaseAttributes" />
++
++  <!-- qopcuaclient.h -->
++  <object-type name="QOpcUaClient">
++    <enum-type name="ClientState" />
++    <enum-type name="ClientError" />
++  </object-type>
++
++  <!-- qopcuanode.h -->
++  <!-- TODO: Reduce the error of QOpcUa::mandatoryBaseAttributes -->
++  <object-type name="QOpcUaNode"/>
++
++  <!-- qopcuaerrorstate.h -->
++  <value-type name="QOpcUaErrorState">
++    <enum-type name="ConnectionStep" />
++  </value-type>
++
++  <!-- qopcuaattributeoperand.h -->
++  <value-type name="QOpcUaAttributeOperand" />
++
++  <!-- qopcuaapplicationdescription.h -->
++  <value-type name="QOpcUaApplicationDescription" />
++  <value-type name="QOpcUaApplicationDescriptionData" />
++
++  <value-type name="QOpcUaEndpointDescription">
++    <enum-type name="MessageSecurityMode" />
++  </value-type>
++
++  <!-- qopcuaauthenticationinformation.h -->
++  <value-type name="QOpcUaAuthenticationInformation" />
++
++  <!-- qopcuaerrorstate.h -->
++  <value-type name="QOpcUaErrorState">
++    <enum-type name="ConnectionStep" />
++  </value-type>
++
++  <!-- qopcuapkiconfiguration.h -->
++  <value-type name="QOpcUaPkiConfiguration" />
++  <value-type name="QOpcUaApplicationIdentity" />
++
++  <!-- qopcuausertokenpolicy.h -->
++  <value-type name="QOpcUaUserTokenPolicy">
++    <enum-type name="TokenType" />
++  </value-type>
++
++  <!-- qopcuanodeids.h -->
++  <!-- qopcuatype.h-->
++  <namespace-type name="QOpcUa">
++    <namespace-type name="NodeIds">
++      <enum-type name="Namespace0" />
++    </namespace-type>
++
++    <enum-type name="NodeClass" />
++    <enum-type name="NodeAttribute" flags="NodeAttributes"/>
++    <enum-type name="WriteMaskBit" flag="WriteMask"/>
++    <enum-type name="AccessLevelBit" flag="AccessLevel"/>
++    <enum-type name="EventNotifierBit" flag="EventNotifier"/>
++    <enum-type name="ReferenceTypeId" />
++    <enum-type name="Types" />
++    <enum-type name="UaStatusCode" />
++    <enum-type name="ErrorCategory" />
++    <enum-type name="AxisScale" />
++
++  </namespace-type>
++
++  <value-type name="QOpcUaQualifiedName" />
++  <value-type name="QOpcUaLocalizedText" />
++  <value-type name="QOpcUaMonitoringParameters">
++    <enum-type name="MonitoringMode" />
++    <enum-type name="SubscriptionType" />
++    <enum-type name="Parameter" flags="Parameters"/>
++  
++    <value-type name="DataChangeFilter">
++      <enum-type name="DataChangeTrigger"/>
++      <enum-type name="DeadbandType"/>
++    </value-type>
++
++    <value-type name="EventFilter"/>
++
++  </value-type>
++  <!-- core folder -->
++  <object-type name="QOpcUaPlugin" />
++  <object-type name="QOpcUaProvider" />
++</typesystem>
+diff --git a/sources/pyside2/tests/QtOpcUa/CMakeLists.txt b/sources/pyside2/tests/QtOpcUa/CMakeLists.txt
+new file mode 100644
+index 0000000..2f7cb08
+--- /dev/null
++++ b/sources/pyside2/tests/QtOpcUa/CMakeLists.txt
+@@ -0,0 +1 @@
++# Please add some tests, here
